@@ -91,8 +91,14 @@ def simulate(Instruction,Memory):
         elif (fetch[1:4] == '010'):    #JIF
             print("*JIF*")
             imm = int(fetch[4:8], 2)
+<<<<<<< HEAD
             if(R[3] == 1):
                 if(fetch[4] == 1):
+=======
+            if (R[3] == 1):
+                if (fetch[4] == 1):
+            #compute the 2's complement of int value imm
+>>>>>>> 51325095521a369fbf6f1aefbf9296547a6539fd
                     imm = imm - (1 << 3)        # compute negative value
                 else:
                     PC = PC + imm
