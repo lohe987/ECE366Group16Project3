@@ -81,16 +81,20 @@ def simulate(Instruction,Memory):
             PC += 1
         elif (fetch[1:8] == '0001000'):    #CNTR0
             print("*CNTR0*")
-            #not done'
+            count = 0
+            n = R[0]
+            while(n):
+                count += n & 1
+                n>>=1
+            R[0] = count
             PC = PC + imm
         elif (fetch[1:4] == '010'):    #JIF
             print("*JIF*")
             imm = int(fetch[4:8], 2)
             if(R[3] == 1):
-                if(fetch[4] == 1)
-            "compute the 2's complement of int value imm"
+                if(fetch[4] == 1):
                     imm = imm - (1 << 3)        # compute negative value
-                else
+                else:
                     PC = PC + imm
             else:
                 PC = PC + 1
