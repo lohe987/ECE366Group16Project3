@@ -88,7 +88,7 @@ def simulate(Instruction,Memory):
             imm = int(fetch[4:8], 2)
             if (R[3] == 1):
                 if (fetch[4] == 1):
-            "compute the 2's complement of int value imm"
+            #compute the 2's complement of int value imm
                     imm = imm - (1 << 3)        # compute negative value
                 else:
                     PC = PC + imm
