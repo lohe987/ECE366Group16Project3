@@ -65,7 +65,9 @@ def simulate(Instruction,Memory):
             Rx = int(fetch[4:6], 2)
             Ry = int(fetch[6:8], 2)
             Ry = Reg[Ry]
-            Memory.insert(Ry, Reg[Rx])
+            while(len(Memory)<Ry):
+                padding = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                Memory.extend(padding)
             Memory[Ry] = Reg[Rx]
             PC += 1
         elif (fetch[1:4] == '110'):    #SLE
@@ -138,9 +140,6 @@ def main():
         Memory.append(int(line,2))
     
     print(*Memory)
-    if(len(Memory) < 10):
-        padding = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        Memory.extend(padding)
         
     print(*Memory)
     simulate(Instruction, Memory)
