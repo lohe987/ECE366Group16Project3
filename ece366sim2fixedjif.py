@@ -4,9 +4,14 @@ def simulate(Instruction,Memory):
     PC = 0              # Program-counter
     DIC = 0
     Reg = [0,0,0,0]     # 4 registers, init to all 0
-    Memory = [0 for i in range(10)] # data memory, 10 spaces all init to 0.
     print("******** Simulation starts *********")
     finished = False
+
+    def twos_comp(val, bits):
+        if(val & (1 << (bits -1))) != 0:
+            val = val-(1<<bits)
+        return val
+
     while(not(finished)):
         fetch = Instruction[PC]
         DIC += 1
@@ -16,11 +21,8 @@ def simulate(Instruction,Memory):
         elif (fetch[1:4] == '101'):  #INIT
             print("*INIT*")
             R = int(fetch[4:6], 2)
-            print("R = ", R)
             imm = int(fetch[6:8], 2)
-            print("imm = ", imm)
             Reg[R] = imm
-            print("R", R, "=", Reg[R])
             PC += 1
         elif (fetch[1:4] == '111'):    #ADDI
             print("*ADDI*")
@@ -53,12 +55,17 @@ def simulate(Instruction,Memory):
             print("*LWD*")
             Rx = int(fetch[4:6], 2)
             Ry = int(fetch[6:8], 2)
+            Ry = Reg[Ry]
+            print("Rx = ", Rx, "Ry = ", Ry)
             Reg[Rx] = Memory[Ry]
+            print("Reg: ", Rx, " is ", Memory[Ry])
             PC += 1
         elif (fetch[1:4] == '011'):    #SWD
             print("*SWD*")
             Rx = int(fetch[4:6], 2)
             Ry = int(fetch[6:8], 2)
+            Ry = Reg[Ry]
+            Memory.insert(Ry, Reg[Rx])
             Memory[Ry] = Reg[Rx]
             PC += 1
         elif (fetch[1:4] == '110'):    #SLE
@@ -81,21 +88,19 @@ def simulate(Instruction,Memory):
             PC += 1
         elif (fetch[1:8] == '0001000'):    #CNTR0
             count = 0
-            n = R[0]
+            n = Reg[0]
             while(n):
                 count += n & 1
                 n>>=1
-            R[0] = count
+            Reg[0] = count
             PC = PC + imm
         elif (fetch[1:4] == '010'):    #JIF
             print("*JIF*")
-            imm = int(fetch[4:8], 2)
-            if(R[3] == 1):
-                if(fetch[4] == 1):  #compute the" 2's complement of int value imm"
-                    imm = imm - (1 << 3)    # compute negative value
-                else:
-                    PC = PC + imm
-
+            imm3 = fetch[4:8]
+            imm3 = twos_comp(int(imm3,2), len(fetch[4:8]))
+            print("Jif jumps by", imm3)
+            if(Reg[3] == 1):
+                PC = PC + imm3
             else:
                 PC = PC + 1
 
@@ -105,6 +110,7 @@ def simulate(Instruction,Memory):
     #print("Memory :",Memory)
 
     data = open("d_mem.txt","w")    # Write data back into d_mem.txt
+    print(*Memory)
     for i in range(len(Memory)):
         
         data.write(format(Memory[i],"016b"))
@@ -125,12 +131,18 @@ def main():
         Instruction.append(line)                      # Copy all instruction into a list
         Nlines +=1
 
-    print(Instruction[0])
+    #print(Instruction[0])
     for line in data_file:  # Read in data memory
         if (line == "\n" or line[0] =='#'):              # empty lines,comments ignored
             continue
         Memory.append(int(line,2))
     
+    print(*Memory)
+    if(len(Memory) < 10):
+        padding = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        Memory.extend(padding)
+        
+    print(*Memory)
     simulate(Instruction, Memory)
 
     
