@@ -112,7 +112,6 @@ def simulate(Instruction,Memory):
     #print("Memory :",Memory)
 
     data = open("d_mem.txt","w")    # Write data back into d_mem.txt
-    print(*Memory)
     for i in range(len(Memory)):
         
         data.write(format(Memory[i],"016b"))
@@ -139,9 +138,8 @@ def main():
             continue
         Memory.append(int(line,2))
     
-    print(*Memory)
+    
         
-    print(*Memory)
     simulate(Instruction, Memory)
 
     
